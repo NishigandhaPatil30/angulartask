@@ -1,0 +1,60 @@
+<div class="container" fxLayout="column" fxLayoutGap="20px" fxLayoutAlign="center stretch">
+    <h2 style="text-align: center;">Dynamic Form Builder</h2>
+    <form [formGroup]="form" class="example-form" fxLayout="column" fxLayoutGap="10px">
+      <mat-form-field class="example-full-width">
+        <mat-label>Form Name:</mat-label>
+        <input matInput formControlName="formName" placeholder="Enter form name">
+        <mat-error *ngIf="form.get('formName')?.invalid && form.get('formName')?.touched">
+          Form name is required.
+        </mat-error>
+      </mat-form-field>
+  
+      <div formArrayName="fields">
+        <div *ngFor="let field of fields.controls; let i = index" [formGroupName]="i" fxLayout="column" fxLayoutGap="10px">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{ field.get('type')?.value === 'textarea' ? 'Placeholder' : 'Label' }}:</mat-label>
+            <input matInput type="text" formControlName="input" placeholder="Enter {{ field.get('type')?.value === 'textarea' ? 'placeholder' : 'label' }}" [required]="true">
+            <mat-error *ngIf="field.get('label')?.invalid && field.get('label')?.touched">
+              Label is required.
+            </mat-error>
+          </mat-form-field>
+  
+          <mat-form-field *ngIf="field.get('type')?.value === 'dropdown'" class="example-full-width">
+            <mat-label>Options (comma-separated):</mat-label>
+            <input matInput type="text" formControlName="optionsString" placeholder="Enter options">
+          </mat-form-field>
+  
+          <mat-form-field *ngIf="field.get('type')?.value === 'textarea'" class="example-full-width">
+            <mat-label>Placeholder:</mat-label>
+            <textarea matInput formControlName="textarea" placeholder="Enter placeholder"></textarea>
+          </mat-form-field>
+  
+          <mat-radio-group *ngIf="field.get('type')?.value === 'radio'" formControlName="selectedOption">
+            <mat-radio-button *ngFor="let option of field.get('optionsString')?.value.split(',')" [value]="option.trim()">{{ option.trim() }}</mat-radio-button>
+          </mat-radio-group>
+  
+          <mat-form-field *ngIf="field.get('type')?.value === 'dropdown'" class="example-full-width">
+            <mat-label>Select an option</mat-label>
+            <mat-select formControlName="selectedOption">
+              <mat-option *ngFor="let option of field.get('optionsString')?.value.split(',')" [value]="option.trim()">{{ option.trim() }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+  
+          <div>
+            <mat-checkbox formControlName="required">Required</mat-checkbox>
+          </div>
+          <button mat-raised-button type="button" color="warn" (click)="removeField(i)">Remove Field</button>
+        </div>
+      </div>
+  
+      <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="space-between center">
+        <button mat-raised-button type="button" color="primary" (click)="addField('text')">Add Text Field</button>
+        <button mat-raised-button type="button" color="primary" (click)="addField('textarea')">Add Textarea</button>
+        <button mat-raised-button type="button" color="primary" (click)="addField('dropdown')">Add Dropdown</button>
+        <button mat-raised-button type="button" color="primary" (click)="addField('checkbox')">Add Checkbox</button>
+        <button mat-raised-button type="button" color="primary" (click)="addField('radio')">Add Radio Button</button>
+      </div><br>
+      <button mat-raised-button type="button" color="accent" (click)="saveForm()">Save Form</button>
+    </form>
+  </div>
+  
